@@ -1,0 +1,11 @@
+{
+  "domain": "anwb_energy",
+  "name": "ANWB Energy Price",
+  "version": "1.0.0",
+  "documentation": "https://github.com/vincentmaarschalkerweerd/HomeAssisantANWBEnergyPrice",
+  "issue_tracker": "https://github.com/vincentmaarschalkerweerd/HomeAssisantANWBEnergyPrice/issues",
+  "codeowners": ["@vincentmaarschalkerweerd"],
+  "requirements": [],
+  "iot_class": "cloud_polling",
+  "config_flow": true
+}

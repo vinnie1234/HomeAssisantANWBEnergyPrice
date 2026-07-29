@@ -1,0 +1,13 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "ANWB Energy instellen",
+        "description": "Voeg de ANWB energieprijzen integratie toe. Er zijn geen aanvullende gegevens nodig."
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "Slechts één instantie van ANWB Energy is toegestaan."
+    }
+  }
+}

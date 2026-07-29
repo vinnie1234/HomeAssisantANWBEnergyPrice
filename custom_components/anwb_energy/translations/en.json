@@ -1,0 +1,13 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Set up ANWB Energy",
+        "description": "Add the ANWB energy prices integration. No additional details are required."
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "Only one instance of ANWB Energy is allowed."
+    }
+  }
+}
