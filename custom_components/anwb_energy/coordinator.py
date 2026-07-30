@@ -34,7 +34,7 @@ class ANWBEnergyCoordinator(DataUpdateCoordinator):
 
     async def _async_update_data(self) -> dict:
         now = datetime.now(timezone.utc)
-        # Fetch yesterday 23:00 UTC → today 23:00 UTC (covers full local day NL)
+        # Fetch yesterday 23:00 UTC → today 24:00 UTC (covers full NL local day)
         start = now.replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(hours=1)
         end = start + timedelta(hours=25)
 
@@ -50,7 +50,7 @@ class ANWBEnergyCoordinator(DataUpdateCoordinator):
                     response.raise_for_status()
                     raw = await response.json()
         except aiohttp.ClientError as err:
-            raise UpdateFailed(f"Fout bij ophalen ANWB energieprijzen: {err}") from err
+            raise UpdateFailed(f"Error fetching ANWB energy prices: {err}") from err
 
         return self._parse(raw, now)
 
@@ -62,42 +62,49 @@ class ANWBEnergyCoordinator(DataUpdateCoordinator):
             dt = datetime.fromisoformat(entry["date"])
             values = entry.get("values", {})
             hourly[dt] = {
-                "marktprijs": values.get("marktprijs"),
-                "allinPrijs": values.get("allInPrijs"),
+                "market_price": values.get("marktprijs"),
+                "all_in_price": values.get("allInPrijs"),
             }
 
-        # Current hour price: find the entry whose hour matches now (UTC)
+        # Current hour: find the entry matching now (UTC)
         current_hour = now.replace(minute=0, second=0, microsecond=0)
         current = hourly.get(current_hour) or self._closest(hourly, current_hour)
 
-        marktprijzen = [v["marktprijs"] for v in hourly.values() if v["marktprijs"] is not None]
-        allinprijzen = [v["allinPrijs"] for v in hourly.values() if v["allinPrijs"] is not None]
+        market_prices = [v["market_price"] for v in hourly.values() if v["market_price"] is not None]
+        all_in_prices = [v["all_in_price"] for v in hourly.values() if v["all_in_price"] is not None]
 
-        # Build sorted list for attributes (ISO string keys for serialisation)
         hourly_attr = {
             dt.isoformat(): vals for dt, vals in sorted(hourly.items())
         }
 
-        marktprijs_goedkoopste = min(hourly.items(), key=lambda x: x[1]["marktprijs"] if x[1]["marktprijs"] is not None else float("inf"), default=None)
-        allinprijs_goedkoopste = min(hourly.items(), key=lambda x: x[1]["allinPrijs"] if x[1]["allinPrijs"] is not None else float("inf"), default=None)
+        cheapest_market = min(
+            hourly.items(),
+            key=lambda x: x[1]["market_price"] if x[1]["market_price"] is not None else float("inf"),
+            default=None,
+        )
+        cheapest_all_in = min(
+            hourly.items(),
+            key=lambda x: x[1]["all_in_price"] if x[1]["all_in_price"] is not None else float("inf"),
+            default=None,
+        )
 
         return {
             "current": current,
             "hourly": hourly_attr,
-            "marktprijs_min": min(marktprijzen) if marktprijzen else None,
-            "marktprijs_max": max(marktprijzen) if marktprijzen else None,
-            "marktprijs_avg": round(sum(marktprijzen) / len(marktprijzen), 5) if marktprijzen else None,
-            "allinprijs_min": min(allinprijzen) if allinprijzen else None,
-            "allinprijs_max": max(allinprijzen) if allinprijzen else None,
-            "allinprijs_avg": round(sum(allinprijzen) / len(allinprijzen), 5) if allinprijzen else None,
-            "marktprijs_goedkoopste_uur": {
-                "prijs": marktprijs_goedkoopste[1]["marktprijs"],
-                "tijdstip": marktprijs_goedkoopste[0].isoformat(),
-            } if marktprijs_goedkoopste else None,
-            "allinprijs_goedkoopste_uur": {
-                "prijs": allinprijs_goedkoopste[1]["allinPrijs"],
-                "tijdstip": allinprijs_goedkoopste[0].isoformat(),
-            } if allinprijs_goedkoopste else None,
+            "market_price_min": min(market_prices) if market_prices else None,
+            "market_price_max": max(market_prices) if market_prices else None,
+            "market_price_avg": round(sum(market_prices) / len(market_prices), 5) if market_prices else None,
+            "all_in_price_min": min(all_in_prices) if all_in_prices else None,
+            "all_in_price_max": max(all_in_prices) if all_in_prices else None,
+            "all_in_price_avg": round(sum(all_in_prices) / len(all_in_prices), 5) if all_in_prices else None,
+            "market_price_cheapest_hour": {
+                "price": cheapest_market[1]["market_price"],
+                "time": cheapest_market[0].isoformat(),
+            } if cheapest_market else None,
+            "all_in_price_cheapest_hour": {
+                "price": cheapest_all_in[1]["all_in_price"],
+                "time": cheapest_all_in[0].isoformat(),
+            } if cheapest_all_in else None,
         }
 
     @staticmethod

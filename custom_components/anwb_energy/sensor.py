@@ -10,15 +10,12 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import UnitOfEnergy
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN
 from .coordinator import ANWBEnergyCoordinator
-
-EURO_PER_KWH = "€/kWh"  # HA has no built-in unit for this price type
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -28,27 +25,27 @@ class ANWBSensorDescription(SensorEntityDescription):
 
 
 def _hourly_attrs(data: dict) -> dict:
-    return {"tarieven_per_uur": data.get("hourly", {})}
+    return {"hourly_prices": data.get("hourly", {})}
 
 
-def _goedkoopste_markt_attrs(data: dict) -> dict | None:
-    entry = data.get("marktprijs_goedkoopste_uur")
+def _cheapest_market_attrs(data: dict) -> dict | None:
+    entry = data.get("market_price_cheapest_hour")
     if entry is None:
         return None
-    return {"tijdstip": entry["tijdstip"]}
+    return {"time": entry["time"]}
 
 
-def _goedkoopste_allin_attrs(data: dict) -> dict | None:
-    entry = data.get("allinprijs_goedkoopste_uur")
+def _cheapest_allin_attrs(data: dict) -> dict | None:
+    entry = data.get("all_in_price_cheapest_hour")
     if entry is None:
         return None
-    return {"tijdstip": entry["tijdstip"]}
+    return {"time": entry["time"]}
 
 
 SENSORS: tuple[ANWBSensorDescription, ...] = (
     ANWBSensorDescription(
-        key="marktprijs_huidig",
-        name="ANWB Marktprijs Huidig",
+        key="market_price_current",
+        name="ANWB Market Price Current",
         data_key="current",
         native_unit_of_measurement="ct/kWh",
         state_class=SensorStateClass.MEASUREMENT,
@@ -57,8 +54,8 @@ SENSORS: tuple[ANWBSensorDescription, ...] = (
         extra_attrs_fn=_hourly_attrs,
     ),
     ANWBSensorDescription(
-        key="allinprijs_huidig",
-        name="ANWB All-in Prijs Huidig",
+        key="all_in_price_current",
+        name="ANWB All-in Price Current",
         data_key="current",
         native_unit_of_measurement="ct/kWh",
         state_class=SensorStateClass.MEASUREMENT,
@@ -67,78 +64,78 @@ SENSORS: tuple[ANWBSensorDescription, ...] = (
         extra_attrs_fn=_hourly_attrs,
     ),
     ANWBSensorDescription(
-        key="marktprijs_min",
-        name="ANWB Marktprijs Laagste Vandaag",
-        data_key="marktprijs_min",
+        key="market_price_lowest_today",
+        name="ANWB Market Price Lowest Today",
+        data_key="market_price_min",
         native_unit_of_measurement="ct/kWh",
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=3,
         icon="mdi:trending-down",
     ),
     ANWBSensorDescription(
-        key="marktprijs_max",
-        name="ANWB Marktprijs Hoogste Vandaag",
-        data_key="marktprijs_max",
+        key="market_price_highest_today",
+        name="ANWB Market Price Highest Today",
+        data_key="market_price_max",
         native_unit_of_measurement="ct/kWh",
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=3,
         icon="mdi:trending-up",
     ),
     ANWBSensorDescription(
-        key="marktprijs_avg",
-        name="ANWB Marktprijs Gemiddeld Vandaag",
-        data_key="marktprijs_avg",
+        key="market_price_average_today",
+        name="ANWB Market Price Average Today",
+        data_key="market_price_avg",
         native_unit_of_measurement="ct/kWh",
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=3,
         icon="mdi:approximately-equal",
     ),
     ANWBSensorDescription(
-        key="allinprijs_min",
-        name="ANWB All-in Prijs Laagste Vandaag",
-        data_key="allinprijs_min",
+        key="all_in_price_lowest_today",
+        name="ANWB All-in Price Lowest Today",
+        data_key="all_in_price_min",
         native_unit_of_measurement="ct/kWh",
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=3,
         icon="mdi:trending-down",
     ),
     ANWBSensorDescription(
-        key="allinprijs_max",
-        name="ANWB All-in Prijs Hoogste Vandaag",
-        data_key="allinprijs_max",
+        key="all_in_price_highest_today",
+        name="ANWB All-in Price Highest Today",
+        data_key="all_in_price_max",
         native_unit_of_measurement="ct/kWh",
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=3,
         icon="mdi:trending-up",
     ),
     ANWBSensorDescription(
-        key="allinprijs_avg",
-        name="ANWB All-in Prijs Gemiddeld Vandaag",
-        data_key="allinprijs_avg",
+        key="all_in_price_average_today",
+        name="ANWB All-in Price Average Today",
+        data_key="all_in_price_avg",
         native_unit_of_measurement="ct/kWh",
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=3,
         icon="mdi:approximately-equal",
     ),
     ANWBSensorDescription(
-        key="marktprijs_goedkoopste_uur",
-        name="ANWB Marktprijs Goedkoopste Uur Vandaag",
-        data_key="marktprijs_goedkoopste_uur",
+        key="market_price_cheapest_hour",
+        name="ANWB Market Price Cheapest Hour Today",
+        data_key="market_price_cheapest_hour",
         native_unit_of_measurement="ct/kWh",
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=3,
         icon="mdi:clock-check-outline",
-        extra_attrs_fn=_goedkoopste_markt_attrs,
+        extra_attrs_fn=_cheapest_market_attrs,
     ),
     ANWBSensorDescription(
-        key="allinprijs_goedkoopste_uur",
-        name="ANWB All-in Prijs Goedkoopste Uur Vandaag",
-        data_key="allinprijs_goedkoopste_uur",
+        key="all_in_price_cheapest_hour",
+        name="ANWB All-in Price Cheapest Hour Today",
+        data_key="all_in_price_cheapest_hour",
         native_unit_of_measurement="ct/kWh",
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=3,
         icon="mdi:clock-check-outline",
-        extra_attrs_fn=_goedkoopste_allin_attrs,
+        extra_attrs_fn=_cheapest_allin_attrs,
     ),
 )
 
@@ -172,17 +169,16 @@ class ANWBSensor(CoordinatorEntity[ANWBEnergyCoordinator], SensorEntity):
         if data is None:
             return None
 
-        key = self.entity_description.data_key
-        value = data.get(key)
+        value = data.get(self.entity_description.data_key)
 
         if isinstance(value, dict):
-            # goedkoopste_uur entries have a "prijs" key
-            if "prijs" in value:
-                return value.get("prijs")
-            # current entry has marktprijs / allinPrijs
-            if "marktprijs" in self.entity_description.key:
-                return value.get("marktprijs")
-            return value.get("allinPrijs")
+            # cheapest_hour entries have a "price" key
+            if "price" in value:
+                return value.get("price")
+            # current entry has market_price / all_in_price
+            if "market" in self.entity_description.key:
+                return value.get("market_price")
+            return value.get("all_in_price")
 
         return value
 
