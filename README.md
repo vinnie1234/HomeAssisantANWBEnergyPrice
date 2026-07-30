@@ -3,6 +3,9 @@
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
 [![GitHub release](https://img.shields.io/github/v/release/vinnie1234/HomeAssisantANWBEnergyPrice)](https://github.com/vinnie1234/HomeAssisantANWBEnergyPrice/releases)
 
+[![Add to HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=vinnie1234&repository=HomeAssisantANWBEnergyPrice&category=integration)
+[![Open your Home Assistant instance](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=anwb_energy)
+
 Automatically fetches dynamic electricity and gas prices from **ANWB Energie** every hour and exposes them as sensors in Home Assistant.
 
 Prices are based on the daily spot market and supplemented by ANWB with fixed costs to produce an all-in price. Useful for automations that schedule appliances to run at the cheapest hour of the day.
@@ -54,6 +57,18 @@ The `cheapest_hour` sensors expose a `time` attribute with the exact hour at whi
 ---
 
 ## Installation via HACS
+
+### Option 1 — One click (recommended)
+
+Click the button below to add this repository directly to HACS:
+
+[![Add to HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=vinnie1234&repository=HomeAssisantANWBEnergyPrice&category=integration)
+
+Then click **Download**, restart Home Assistant, and use the button below to set up the integration:
+
+[![Open your Home Assistant instance](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=anwb_energy)
+
+### Option 2 — Manually via HACS
 
 1. Go to **HACS → Integrations** in Home Assistant
 2. Click the three dots (⋮) in the top right and choose **Custom repositories**
