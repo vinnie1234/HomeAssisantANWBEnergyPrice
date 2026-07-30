@@ -53,6 +53,7 @@ SENSORS: tuple[ANWBSensorDescription, ...] = (
         native_unit_of_measurement="ct/kWh",
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=3,
+        icon="mdi:lightning-bolt",
         extra_attrs_fn=_hourly_attrs,
     ),
     ANWBSensorDescription(
@@ -62,6 +63,7 @@ SENSORS: tuple[ANWBSensorDescription, ...] = (
         native_unit_of_measurement="ct/kWh",
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=3,
+        icon="mdi:lightning-bolt-circle",
         extra_attrs_fn=_hourly_attrs,
     ),
     ANWBSensorDescription(
@@ -71,6 +73,7 @@ SENSORS: tuple[ANWBSensorDescription, ...] = (
         native_unit_of_measurement="ct/kWh",
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=3,
+        icon="mdi:trending-down",
     ),
     ANWBSensorDescription(
         key="marktprijs_max",
@@ -79,6 +82,7 @@ SENSORS: tuple[ANWBSensorDescription, ...] = (
         native_unit_of_measurement="ct/kWh",
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=3,
+        icon="mdi:trending-up",
     ),
     ANWBSensorDescription(
         key="marktprijs_avg",
@@ -87,6 +91,7 @@ SENSORS: tuple[ANWBSensorDescription, ...] = (
         native_unit_of_measurement="ct/kWh",
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=3,
+        icon="mdi:approximately-equal",
     ),
     ANWBSensorDescription(
         key="allinprijs_min",
@@ -95,6 +100,7 @@ SENSORS: tuple[ANWBSensorDescription, ...] = (
         native_unit_of_measurement="ct/kWh",
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=3,
+        icon="mdi:trending-down",
     ),
     ANWBSensorDescription(
         key="allinprijs_max",
@@ -103,6 +109,7 @@ SENSORS: tuple[ANWBSensorDescription, ...] = (
         native_unit_of_measurement="ct/kWh",
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=3,
+        icon="mdi:trending-up",
     ),
     ANWBSensorDescription(
         key="allinprijs_avg",
@@ -111,6 +118,7 @@ SENSORS: tuple[ANWBSensorDescription, ...] = (
         native_unit_of_measurement="ct/kWh",
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=3,
+        icon="mdi:approximately-equal",
     ),
     ANWBSensorDescription(
         key="marktprijs_goedkoopste_uur",
@@ -119,6 +127,7 @@ SENSORS: tuple[ANWBSensorDescription, ...] = (
         native_unit_of_measurement="ct/kWh",
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=3,
+        icon="mdi:clock-check-outline",
         extra_attrs_fn=_goedkoopste_markt_attrs,
     ),
     ANWBSensorDescription(
@@ -128,6 +137,7 @@ SENSORS: tuple[ANWBSensorDescription, ...] = (
         native_unit_of_measurement="ct/kWh",
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=3,
+        icon="mdi:clock-check-outline",
         extra_attrs_fn=_goedkoopste_allin_attrs,
     ),
 )
