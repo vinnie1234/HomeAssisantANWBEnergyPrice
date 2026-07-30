@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from typing import Any
 
 from homeassistant.components.sensor import (
-    SensorDeviceClass,
     SensorEntity,
     SensorEntityDescription,
     SensorStateClass,
@@ -14,7 +13,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN
+from .const import DOMAIN, RESOURCE_ELECTRICITY, RESOURCE_GAS
 from .coordinator import ANWBEnergyCoordinator
 
 
@@ -42,30 +41,29 @@ def _cheapest_allin_attrs(data: dict) -> dict | None:
     return {"time": entry["time"]}
 
 
-SENSORS: tuple[ANWBSensorDescription, ...] = (
+# Shared sensor template — used for both electricity and gas
+_SENSOR_TEMPLATES: tuple[ANWBSensorDescription, ...] = (
     ANWBSensorDescription(
         key="market_price_current",
-        name="ANWB Market Price Current",
+        name="Market Price Current",
         data_key="current",
         native_unit_of_measurement="ct/kWh",
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=3,
-        icon="mdi:lightning-bolt",
         extra_attrs_fn=_hourly_attrs,
     ),
     ANWBSensorDescription(
         key="all_in_price_current",
-        name="ANWB All-in Price Current",
+        name="All-in Price Current",
         data_key="current",
         native_unit_of_measurement="ct/kWh",
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=3,
-        icon="mdi:lightning-bolt-circle",
         extra_attrs_fn=_hourly_attrs,
     ),
     ANWBSensorDescription(
         key="market_price_lowest_today",
-        name="ANWB Market Price Lowest Today",
+        name="Market Price Lowest Today",
         data_key="market_price_min",
         native_unit_of_measurement="ct/kWh",
         state_class=SensorStateClass.MEASUREMENT,
@@ -74,7 +72,7 @@ SENSORS: tuple[ANWBSensorDescription, ...] = (
     ),
     ANWBSensorDescription(
         key="market_price_highest_today",
-        name="ANWB Market Price Highest Today",
+        name="Market Price Highest Today",
         data_key="market_price_max",
         native_unit_of_measurement="ct/kWh",
         state_class=SensorStateClass.MEASUREMENT,
@@ -83,7 +81,7 @@ SENSORS: tuple[ANWBSensorDescription, ...] = (
     ),
     ANWBSensorDescription(
         key="market_price_average_today",
-        name="ANWB Market Price Average Today",
+        name="Market Price Average Today",
         data_key="market_price_avg",
         native_unit_of_measurement="ct/kWh",
         state_class=SensorStateClass.MEASUREMENT,
@@ -92,7 +90,7 @@ SENSORS: tuple[ANWBSensorDescription, ...] = (
     ),
     ANWBSensorDescription(
         key="all_in_price_lowest_today",
-        name="ANWB All-in Price Lowest Today",
+        name="All-in Price Lowest Today",
         data_key="all_in_price_min",
         native_unit_of_measurement="ct/kWh",
         state_class=SensorStateClass.MEASUREMENT,
@@ -101,7 +99,7 @@ SENSORS: tuple[ANWBSensorDescription, ...] = (
     ),
     ANWBSensorDescription(
         key="all_in_price_highest_today",
-        name="ANWB All-in Price Highest Today",
+        name="All-in Price Highest Today",
         data_key="all_in_price_max",
         native_unit_of_measurement="ct/kWh",
         state_class=SensorStateClass.MEASUREMENT,
@@ -110,7 +108,7 @@ SENSORS: tuple[ANWBSensorDescription, ...] = (
     ),
     ANWBSensorDescription(
         key="all_in_price_average_today",
-        name="ANWB All-in Price Average Today",
+        name="All-in Price Average Today",
         data_key="all_in_price_avg",
         native_unit_of_measurement="ct/kWh",
         state_class=SensorStateClass.MEASUREMENT,
@@ -119,7 +117,7 @@ SENSORS: tuple[ANWBSensorDescription, ...] = (
     ),
     ANWBSensorDescription(
         key="market_price_cheapest_hour",
-        name="ANWB Market Price Cheapest Hour Today",
+        name="Market Price Cheapest Hour Today",
         data_key="market_price_cheapest_hour",
         native_unit_of_measurement="ct/kWh",
         state_class=SensorStateClass.MEASUREMENT,
@@ -129,7 +127,7 @@ SENSORS: tuple[ANWBSensorDescription, ...] = (
     ),
     ANWBSensorDescription(
         key="all_in_price_cheapest_hour",
-        name="ANWB All-in Price Cheapest Hour Today",
+        name="All-in Price Cheapest Hour Today",
         data_key="all_in_price_cheapest_hour",
         native_unit_of_measurement="ct/kWh",
         state_class=SensorStateClass.MEASUREMENT,
@@ -139,16 +137,42 @@ SENSORS: tuple[ANWBSensorDescription, ...] = (
     ),
 )
 
+_RESOURCE_CONFIG = {
+    RESOURCE_ELECTRICITY: {
+        "label": "Electricity",
+        "current_icon": "mdi:lightning-bolt",
+        "allin_icon": "mdi:lightning-bolt-circle",
+    },
+    RESOURCE_GAS: {
+        "label": "Gas",
+        "current_icon": "mdi:fire",
+        "allin_icon": "mdi:fire-circle",
+    },
+}
+
 
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    coordinator: ANWBEnergyCoordinator = hass.data[DOMAIN][entry.entry_id]
-    async_add_entities(
-        ANWBSensor(coordinator, description) for description in SENSORS
-    )
+    coordinators: dict[str, ANWBEnergyCoordinator] = hass.data[DOMAIN][entry.entry_id]
+
+    entities = []
+    for resource, coordinator in coordinators.items():
+        config = _RESOURCE_CONFIG[resource]
+        for template in _SENSOR_TEMPLATES:
+            # Pick correct icon for current-price sensors
+            if template.key == "market_price_current":
+                icon = config["current_icon"]
+            elif template.key == "all_in_price_current":
+                icon = config["allin_icon"]
+            else:
+                icon = template.icon
+
+            entities.append(ANWBSensor(coordinator, template, resource, config["label"], icon))
+
+    async_add_entities(entities)
 
 
 class ANWBSensor(CoordinatorEntity[ANWBEnergyCoordinator], SensorEntity):
@@ -158,10 +182,16 @@ class ANWBSensor(CoordinatorEntity[ANWBEnergyCoordinator], SensorEntity):
         self,
         coordinator: ANWBEnergyCoordinator,
         description: ANWBSensorDescription,
+        resource: str,
+        label: str,
+        icon: str | None,
     ) -> None:
         super().__init__(coordinator)
         self.entity_description = description
-        self._attr_unique_id = f"anwb_energy_{description.key}"
+        self._resource = resource
+        self._attr_unique_id = f"anwb_energy_{resource}_{description.key}"
+        self._attr_name = f"ANWB {label} {description.name}"
+        self._attr_icon = icon
 
     @property
     def native_value(self) -> float | None:
@@ -172,10 +202,8 @@ class ANWBSensor(CoordinatorEntity[ANWBEnergyCoordinator], SensorEntity):
         value = data.get(self.entity_description.data_key)
 
         if isinstance(value, dict):
-            # cheapest_hour entries have a "price" key
             if "price" in value:
                 return value.get("price")
-            # current entry has market_price / all_in_price
             if "market" in self.entity_description.key:
                 return value.get("market_price")
             return value.get("all_in_price")

@@ -6,7 +6,7 @@ import aiohttp
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import DOMAIN, API_URL, API_INTERVAL
+from .const import DOMAIN, API_INTERVAL
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -24,13 +24,15 @@ HEADERS = {
 
 
 class ANWBEnergyCoordinator(DataUpdateCoordinator):
-    def __init__(self, hass: HomeAssistant) -> None:
+    def __init__(self, hass: HomeAssistant, api_url: str, resource: str) -> None:
         super().__init__(
             hass,
             _LOGGER,
-            name=DOMAIN,
+            name=f"{DOMAIN}_{resource}",
             update_interval=timedelta(hours=1),
         )
+        self._api_url = api_url
+        self._resource = resource
 
     async def _async_update_data(self) -> dict:
         now = datetime.now(timezone.utc)
@@ -46,11 +48,13 @@ class ANWBEnergyCoordinator(DataUpdateCoordinator):
 
         try:
             async with aiohttp.ClientSession(headers=HEADERS) as session:
-                async with session.get(API_URL, params=params) as response:
+                async with session.get(self._api_url, params=params) as response:
                     response.raise_for_status()
                     raw = await response.json()
         except aiohttp.ClientError as err:
-            raise UpdateFailed(f"Error fetching ANWB energy prices: {err}") from err
+            raise UpdateFailed(
+                f"Error fetching ANWB {self._resource} prices: {err}"
+            ) from err
 
         return self._parse(raw, now)
 
@@ -66,7 +70,6 @@ class ANWBEnergyCoordinator(DataUpdateCoordinator):
                 "all_in_price": values.get("allInPrijs"),
             }
 
-        # Current hour: find the entry matching now (UTC)
         current_hour = now.replace(minute=0, second=0, microsecond=0)
         current = hourly.get(current_hour) or self._closest(hourly, current_hour)
 
