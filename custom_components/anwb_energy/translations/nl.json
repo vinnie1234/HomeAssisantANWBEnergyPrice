@@ -3,8 +3,15 @@
     "step": {
       "user": {
         "title": "ANWB Energy instellen",
-        "description": "Voeg de ANWB energieprijzen integratie toe. Er zijn geen aanvullende gegevens nodig."
+        "description": "Selecteer welke energiesoorten je wilt bijhouden.",
+        "data": {
+          "electricity": "Elektriciteit",
+          "gas": "Gas"
+        }
       }
+    },
+    "error": {
+      "at_least_one": "Selecteer minimaal één energiesoort."
     },
     "abort": {
       "single_instance_allowed": "Slechts één instantie van ANWB Energy is toegestaan."

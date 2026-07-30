@@ -3,8 +3,15 @@
     "step": {
       "user": {
         "title": "Set up ANWB Energy",
-        "description": "Add the ANWB energy prices integration. No additional details are required."
+        "description": "Select which energy types you want to track.",
+        "data": {
+          "electricity": "Electricity",
+          "gas": "Gas"
+        }
       }
+    },
+    "error": {
+      "at_least_one": "Select at least one energy type."
     },
     "abort": {
       "single_instance_allowed": "Only one instance of ANWB Energy is allowed."

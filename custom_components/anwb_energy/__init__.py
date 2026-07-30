@@ -1,23 +1,34 @@
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
-from .const import DOMAIN, API_URL_ELECTRICITY, API_URL_GAS, RESOURCE_ELECTRICITY, RESOURCE_GAS
+from .const import (
+    DOMAIN,
+    API_URL_ELECTRICITY,
+    API_URL_GAS,
+    RESOURCE_ELECTRICITY,
+    RESOURCE_GAS,
+    CONF_ELECTRICITY,
+    CONF_GAS,
+)
 from .coordinator import ANWBEnergyCoordinator
 
 PLATFORMS = ["sensor"]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    electricity_coordinator = ANWBEnergyCoordinator(hass, API_URL_ELECTRICITY, RESOURCE_ELECTRICITY)
-    gas_coordinator = ANWBEnergyCoordinator(hass, API_URL_GAS, RESOURCE_GAS)
+    coordinators = {}
 
-    await electricity_coordinator.async_config_entry_first_refresh()
-    await gas_coordinator.async_config_entry_first_refresh()
+    if entry.data.get(CONF_ELECTRICITY, True):
+        coordinator = ANWBEnergyCoordinator(hass, API_URL_ELECTRICITY, RESOURCE_ELECTRICITY)
+        await coordinator.async_config_entry_first_refresh()
+        coordinators[RESOURCE_ELECTRICITY] = coordinator
 
-    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = {
-        RESOURCE_ELECTRICITY: electricity_coordinator,
-        RESOURCE_GAS: gas_coordinator,
-    }
+    if entry.data.get(CONF_GAS, True):
+        coordinator = ANWBEnergyCoordinator(hass, API_URL_GAS, RESOURCE_GAS)
+        await coordinator.async_config_entry_first_refresh()
+        coordinators[RESOURCE_GAS] = coordinator
+
+    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coordinators
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True

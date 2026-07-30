@@ -7,3 +7,6 @@ API_INTERVAL = "HOUR"
 
 RESOURCE_ELECTRICITY = "electricity"
 RESOURCE_GAS = "gas"
+
+CONF_ELECTRICITY = "electricity"
+CONF_GAS = "gas"
