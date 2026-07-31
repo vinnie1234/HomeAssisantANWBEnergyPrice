@@ -2,8 +2,16 @@ import voluptuous as vol
 
 from homeassistant import config_entries
 from homeassistant.data_entry_flow import FlowResult
+from homeassistant.helpers.selector import SelectSelector, SelectSelectorConfig, SelectSelectorMode
 
-from .const import DOMAIN, CONF_ELECTRICITY, CONF_GAS
+from .const import (
+    DOMAIN,
+    CONF_ELECTRICITY,
+    CONF_GAS,
+    CONF_PRICE_UNIT,
+    PRICE_UNIT_CENTS,
+    PRICE_UNIT_EUROS,
+)
 
 
 class ANWBEnergyConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -30,5 +38,12 @@ class ANWBEnergyConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             {
                 vol.Required(CONF_ELECTRICITY, default=True): bool,
                 vol.Required(CONF_GAS, default=True): bool,
+                vol.Required(CONF_PRICE_UNIT, default=PRICE_UNIT_CENTS): SelectSelector(
+                    SelectSelectorConfig(
+                        options=[PRICE_UNIT_CENTS, PRICE_UNIT_EUROS],
+                        translation_key=CONF_PRICE_UNIT,
+                        mode=SelectSelectorMode.LIST,
+                    )
+                ),
             }
         )

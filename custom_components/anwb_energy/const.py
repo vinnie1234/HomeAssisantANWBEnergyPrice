@@ -10,3 +10,7 @@ RESOURCE_GAS = "gas"
 
 CONF_ELECTRICITY = "electricity"
 CONF_GAS = "gas"
+CONF_PRICE_UNIT = "price_unit"
+
+PRICE_UNIT_CENTS = "cents"
+PRICE_UNIT_EUROS = "euros"

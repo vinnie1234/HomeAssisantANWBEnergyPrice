@@ -6,7 +6,11 @@
         "description": "Selecteer welke energiesoorten je wilt bijhouden.",
         "data": {
           "electricity": "Elektriciteit",
-          "gas": "Gas"
+          "gas": "Gas",
+          "price_unit": "Prijseenheid"
+        },
+        "data_description": {
+          "price_unit": "Kies of prijzen worden weergegeven in eurocent (ct/kWh) of euro (EUR/kWh)."
         }
       }
     },
@@ -15,6 +19,14 @@
     },
     "abort": {
       "single_instance_allowed": "Slechts één instantie van ANWB Energy is toegestaan."
+    }
+  },
+  "selector": {
+    "price_unit": {
+      "options": {
+        "cents": "Eurocent (ct/kWh)",
+        "euros": "Euro (EUR/kWh)"
+      }
     }
   }
 }

@@ -6,7 +6,11 @@
         "description": "Select which energy types you want to track.",
         "data": {
           "electricity": "Electricity",
-          "gas": "Gas"
+          "gas": "Gas",
+          "price_unit": "Price unit"
+        },
+        "data_description": {
+          "price_unit": "Choose whether prices are displayed in euro cents (ct/kWh) or euros (EUR/kWh)."
         }
       }
     },
@@ -15,6 +19,14 @@
     },
     "abort": {
       "single_instance_allowed": "Only one instance of ANWB Energy is allowed."
+    }
+  },
+  "selector": {
+    "price_unit": {
+      "options": {
+        "cents": "Euro cents (ct/kWh)",
+        "euros": "Euros (EUR/kWh)"
+      }
     }
   }
 }
