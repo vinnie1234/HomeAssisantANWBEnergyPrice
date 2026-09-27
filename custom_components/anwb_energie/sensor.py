@@ -37,7 +37,7 @@ def _hourly_attrs(data: dict, use_euros: bool) -> dict:
     hourly = data.get("hourly", {})
     if use_euros:
         hourly = {
-            ts: {k: v / 100 for k, v in prices.items()}
+            ts: {k: v / 100 if v is not None else None for k, v in prices.items()}
             for ts, prices in hourly.items()
         }
     return {"hourly_prices": hourly}
