@@ -30,7 +30,8 @@ class ANWBEnergyCoordinator(DataUpdateCoordinator):
             hass,
             _LOGGER,
             name=f"{DOMAIN}_{resource}",
-            update_interval=timedelta(hours=1),
+            # Refreshes are triggered at the top of every hour from __init__.py
+            update_interval=None,
         )
         self._api_url = api_url
         self._resource = resource
@@ -57,7 +58,10 @@ class ANWBEnergyCoordinator(DataUpdateCoordinator):
                 f"Error fetching ANWB {self._resource} prices: {err}"
             ) from err
 
-        return self._parse(raw, now)
+        data = self._parse(raw, now)
+        if data["market_price_min"] is None and data["all_in_price_min"] is None:
+            raise UpdateFailed(f"No ANWB {self._resource} prices found, retrying next hour")
+        return data
 
     def _parse(self, raw: dict, now: datetime) -> dict:
         entries = raw.get("data", [])

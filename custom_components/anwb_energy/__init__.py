@@ -1,5 +1,6 @@
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.event import async_track_time_change
 
 from .const import (
     DOMAIN,
@@ -19,14 +20,25 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     coordinators = {}
 
     if entry.data.get(CONF_ELECTRICITY, True):
-        coordinator = ANWBEnergyCoordinator(hass, API_URL_ELECTRICITY, RESOURCE_ELECTRICITY)
-        await coordinator.async_config_entry_first_refresh()
-        coordinators[RESOURCE_ELECTRICITY] = coordinator
+        coordinators[RESOURCE_ELECTRICITY] = ANWBEnergyCoordinator(
+            hass, API_URL_ELECTRICITY, RESOURCE_ELECTRICITY
+        )
 
     if entry.data.get(CONF_GAS, True):
-        coordinator = ANWBEnergyCoordinator(hass, API_URL_GAS, RESOURCE_GAS)
-        await coordinator.async_config_entry_first_refresh()
-        coordinators[RESOURCE_GAS] = coordinator
+        coordinators[RESOURCE_GAS] = ANWBEnergyCoordinator(hass, API_URL_GAS, RESOURCE_GAS)
+
+    # A failed first fetch must not block setup: the sensors stay registered
+    # (unavailable) and the hourly refresh below retries.
+    for coordinator in coordinators.values():
+        await coordinator.async_refresh()
+
+    async def _hourly_refresh(_now) -> None:
+        for coordinator in coordinators.values():
+            await coordinator.async_refresh()
+
+    entry.async_on_unload(
+        async_track_time_change(hass, _hourly_refresh, minute=0, second=5)
+    )
 
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coordinators
 

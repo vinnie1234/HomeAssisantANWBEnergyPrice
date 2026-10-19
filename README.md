@@ -113,7 +113,7 @@ action:
 
 ## Data refresh
 
-Data is fetched automatically every hour. The ANWB API typically publishes the next day's electricity prices around 14:00 local time. Gas prices update less frequently and may stay the same for multiple hours.
+Data is fetched automatically at the start of every hour. If a fetch fails or returns no prices, the sensors become unavailable and the integration retries at the next hour. The ANWB API typically publishes the next day's electricity prices around 14:00 local time. Gas prices update less frequently and may stay the same for multiple hours.
 
 ---
 
