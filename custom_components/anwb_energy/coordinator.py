@@ -5,6 +5,7 @@ import aiohttp
 
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from homeassistant.util import dt as dt_util
 
 from .const import DOMAIN, API_INTERVAL
 
@@ -36,13 +37,13 @@ class ANWBEnergyCoordinator(DataUpdateCoordinator):
 
     async def _async_update_data(self) -> dict:
         now = datetime.now(timezone.utc)
-        # Fetch yesterday 23:00 UTC → today 24:00 UTC (covers full NL local day)
-        start = now.replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(hours=1)
-        end = start + timedelta(hours=25)
+        # Fetch the full local day (DST-aware), end is exclusive
+        start = dt_util.start_of_local_day()
+        end = dt_util.start_of_local_day(start.date() + timedelta(days=1))
 
         params = {
-            "startDate": start.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
-            "endDate": end.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
+            "startDate": start.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.000Z"),
+            "endDate": end.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.000Z"),
             "interval": API_INTERVAL,
         }
 
