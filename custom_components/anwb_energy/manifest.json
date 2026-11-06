@@ -1,12 +1,16 @@
 {
   "domain": "anwb_energy",
   "name": "ANWB Energy Price",
-  "codeowners": ["@vinnie1234"],
-  "categories": ["energy.energy_prices"],
+  "categories": [
+    "energy.energy_prices"
+  ],
+  "codeowners": [
+    "@vinnie1234"
+  ],
   "config_flow": true,
   "documentation": "https://github.com/vinnie1234/HomeAssisantANWBEnergyPrice",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/vinnie1234/HomeAssisantANWBEnergyPrice/issues",
   "requirements": [],
-  "version": "1.0.5"
+  "version": "1.0.6"
 }
