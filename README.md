@@ -1,6 +1,6 @@
 # ANWB Energy Price
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg)](https://github.com/hacs/integration)
 [![GitHub release](https://img.shields.io/github/v/release/vinnie1234/HomeAssisantANWBEnergyPrice)](https://github.com/vinnie1234/HomeAssisantANWBEnergyPrice/releases)
 
 [![Add to HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=vinnie1234&repository=HomeAssisantANWBEnergyPrice&category=integration)
@@ -56,28 +56,11 @@ The `cheapest_hour` sensors expose a `time` attribute with the exact hour at whi
 
 ---
 
-## Installation via HACS
+## Installation
 
-### Option 1 — One click (recommended)
-
-Click the button below to add this repository directly to HACS:
-
-[![Add to HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=vinnie1234&repository=HomeAssisantANWBEnergyPrice&category=integration)
-
-Then click **Download**, restart Home Assistant, and use the button below to set up the integration:
-
-[![Open your Home Assistant instance](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=anwb_energy)
-
-### Option 2 — Manually via HACS
-
-1. Go to **HACS → Integrations** in Home Assistant
-2. Click the three dots (⋮) in the top right and choose **Custom repositories**
-3. Add this URL: `https://github.com/vinnie1234/HomeAssisantANWBEnergyPrice`
-4. Select **Integration** as the category and click **Add**
-5. Search for **ANWB Energy Price** and click **Download**
-6. Restart Home Assistant
-7. Go to **Settings → Devices & Services → + Add Integration**
-8. Search for **ANWB Energy** and follow the steps
+1. Open **Settings → Marketplace** (formerly HACS), search for **ANWB Energy Price** and choose **Download**. (Or use the *Add to HACS* button above.)
+2. Restart Home Assistant.
+3. Go to **Settings → Devices & Services → + Add Integration**, search for **ANWB Energy** and follow the steps. (Or use the *Open your Home Assistant instance* button above.)
 
 ---
 
