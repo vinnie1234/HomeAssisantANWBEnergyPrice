@@ -50,7 +50,7 @@ The integration creates **20 sensors** — 10 for electricity and 10 for gas.
 
 ### Attributes
 
-The `*_current` sensors expose an `hourly_prices` attribute containing all hourly prices for the day. Useful with [Apex Charts](https://github.com/RomRider/apexcharts-card) to display a price graph.
+The `*_current` sensors expose an `hourly_prices` attribute containing all hourly prices for today and, once ANWB has published them (usually around 14:00), tomorrow. Useful with [Apex Charts](https://github.com/RomRider/apexcharts-card) to display a price graph.
 
 The `cheapest_hour` sensors expose a `time` attribute with the exact hour at which the lowest price occurs. Use this in automations to start the washing machine or charge an EV at the right moment.
 

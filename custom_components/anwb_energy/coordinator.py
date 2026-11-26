@@ -38,9 +38,10 @@ class ANWBEnergyCoordinator(DataUpdateCoordinator):
 
     async def _async_update_data(self) -> dict:
         now = datetime.now(timezone.utc)
-        # Fetch the full local day (DST-aware), end is exclusive
+        # Fetch today and tomorrow (DST-aware), end is exclusive. Tomorrow's
+        # prices are published in the afternoon and are simply absent before that.
         start = dt_util.start_of_local_day()
-        end = dt_util.start_of_local_day(start.date() + timedelta(days=1))
+        end = dt_util.start_of_local_day(start.date() + timedelta(days=2))
 
         params = {
             "startDate": start.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.000Z"),
@@ -78,20 +79,26 @@ class ANWBEnergyCoordinator(DataUpdateCoordinator):
         current_hour = now.replace(minute=0, second=0, microsecond=0)
         current = hourly.get(current_hour) or self._closest(hourly, current_hour)
 
-        market_prices = [v["market_price"] for v in hourly.values() if v["market_price"] is not None]
-        all_in_prices = [v["all_in_price"] for v in hourly.values() if v["all_in_price"] is not None]
+        # Statistics ("lowest/highest/average today", cheapest hour) only cover today
+        today = dt_util.as_local(now).date()
+        today_hourly = {
+            dt: vals for dt, vals in hourly.items() if dt_util.as_local(dt).date() == today
+        }
+
+        market_prices = [v["market_price"] for v in today_hourly.values() if v["market_price"] is not None]
+        all_in_prices = [v["all_in_price"] for v in today_hourly.values() if v["all_in_price"] is not None]
 
         hourly_attr = {
             dt.isoformat(): vals for dt, vals in sorted(hourly.items())
         }
 
         cheapest_market = min(
-            hourly.items(),
+            today_hourly.items(),
             key=lambda x: x[1]["market_price"] if x[1]["market_price"] is not None else float("inf"),
             default=None,
         )
         cheapest_all_in = min(
-            hourly.items(),
+            today_hourly.items(),
             key=lambda x: x[1]["all_in_price"] if x[1]["all_in_price"] is not None else float("inf"),
             default=None,
         )
