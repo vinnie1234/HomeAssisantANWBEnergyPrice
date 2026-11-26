@@ -46,7 +46,7 @@ The integration creates **20 sensors** — 10 for electricity and 10 for gas.
 | `sensor.anwb_gas_market_price_cheapest_hour` | Cheapest market price hour + timestamp | 🕐 |
 | `sensor.anwb_gas_all_in_price_cheapest_hour` | Cheapest all-in price hour + timestamp | 🕐 |
 
-> All prices are in **ct/kWh** (euro cents per kilowatt-hour).
+> Electricity prices are in **ct/kWh** (euro cents per kilowatt-hour), gas prices in **ct/m³** (euro cents per cubic metre). With the euro option these become EUR/kWh and EUR/m³.
 
 ### Attributes
 
