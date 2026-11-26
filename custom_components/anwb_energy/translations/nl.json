@@ -10,7 +10,7 @@
           "price_unit": "Prijseenheid"
         },
         "data_description": {
-          "price_unit": "Kies of prijzen worden weergegeven in eurocent (ct/kWh) of euro (EUR/kWh)."
+          "price_unit": "Kies of prijzen worden weergegeven in eurocent (ct/kWh, ct/m³ voor gas) of euro (EUR/kWh, EUR/m³ voor gas)."
         }
       }
     },
@@ -24,8 +24,8 @@
   "selector": {
     "price_unit": {
       "options": {
-        "cents": "Eurocent (ct/kWh)",
-        "euros": "Euro (EUR/kWh)"
+        "cents": "Eurocent (ct/kWh, ct/m³ voor gas)",
+        "euros": "Euro (EUR/kWh, EUR/m³ voor gas)"
       }
     }
   }

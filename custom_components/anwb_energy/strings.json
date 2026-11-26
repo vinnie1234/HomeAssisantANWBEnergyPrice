@@ -10,7 +10,7 @@
           "price_unit": "Price unit"
         },
         "data_description": {
-          "price_unit": "Choose whether prices are displayed in euro cents (ct/kWh) or euros (EUR/kWh)."
+          "price_unit": "Choose whether prices are displayed in euro cents (ct/kWh, ct/m³ for gas) or euros (EUR/kWh, EUR/m³ for gas)."
         }
       }
     },
@@ -24,8 +24,8 @@
   "selector": {
     "price_unit": {
       "options": {
-        "cents": "Euro cents (ct/kWh)",
-        "euros": "Euros (EUR/kWh)"
+        "cents": "Euro cents (ct/kWh, ct/m³ for gas)",
+        "euros": "Euros (EUR/kWh, EUR/m³ for gas)"
       }
     }
   }

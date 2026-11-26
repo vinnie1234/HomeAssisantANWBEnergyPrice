@@ -198,7 +198,10 @@ class ANWBSensor(CoordinatorEntity[ANWBEnergyCoordinator], SensorEntity):
         self._attr_unique_id = f"anwb_energy_{resource}_{description.key}"
         self._attr_name = f"ANWB {label} {description.name}"
         self._attr_icon = icon
-        self._attr_native_unit_of_measurement = "EUR/kWh" if use_euros else "ct/kWh"
+        if resource == RESOURCE_GAS:
+            self._attr_native_unit_of_measurement = "EUR/m³" if use_euros else "ct/m³"
+        else:
+            self._attr_native_unit_of_measurement = "EUR/kWh" if use_euros else "ct/kWh"
 
     def _raw_value(self) -> float | None:
         data = self.coordinator.data
